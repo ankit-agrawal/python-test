@@ -1,0 +1,63 @@
+import csv
+import unittest
+from collections import OrderedDict, namedtuple
+
+#Get reader object of the file
+reader = csv.reader(open('company.csv'))
+#Create a named tuple
+CompanyRecord = namedtuple('CompanyRecord', ['price', 'year', 'month'])
+result_dict = OrderedDict()
+#Get field names from the csv file header
+field_names = next(reader)[2:]
+for name in field_names:
+    #initialize the dictionary with field names as key
+    result_dict[name] = CompanyRecord._make([0, 'year', 'month'])
+for row in reader:
+    year, month = row[:2]
+    for name, price in zip(field_names, map(int, row[2:])):
+        if result_dict[name].price < price:
+            result_dict[name] = CompanyRecord._make([price, year, month])
+
+print result_dict.items()
+
+
+#Unit Test
+class TestCSVData(unittest.TestCase):
+
+	def setUp(self):
+		self.f = open("company.csv")
+		reader = csv.reader(self.f)
+		self.names = reader.next()[2:]
+		self.assertEqual(type(self.names), type(list()))
+		self.result_dict = OrderedDict()
+		tup = namedtuple('tup', ['price', 'year', 'month'])
+		for name in self.names:
+			#initialize the dict
+			self.result_dict[name] = tup(0, 'year', 'month')
+
+
+	def test_DataByRow(self):
+		reader = csv.reader(self.f)
+		for row in reader:
+			self.assertTrue(row)
+			self.assertEqual(type(row), type(list()))
+			self.assertEqual(len(row), 5+2) # Replace 5 with number of companies
+			year, month = row[:2]
+			self.assertIsNotNone(year)
+			self.assertIsNotNone(month)
+			self.assertEqual(type(year), str)
+			self.assertEqual(type(month), str)
+
+	def testMappingData(self):
+		reader = csv.reader(self.f)
+		for data in reader:		
+			year, month = data[:2]
+			self.assertEqual(len(self.names), len(data[2:]))
+			self.assertEqual(type(data[2:]), list)
+			result_dict = self.result_dict
+			for name, price in zip(self.names, map(int, data[2:])):
+				if result_dict[name].price < price:
+					self.assertTrue(result_dict[name].price < price)
+					
+if __name__ == '__main__':
+    unittest.main()
