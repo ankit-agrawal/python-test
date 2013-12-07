@@ -56,7 +56,7 @@ class TestCSVData(unittest.TestCase):
 		    result_dict = self.result_dict
 		    for name, price in zip(self.names, map(int, data[2:])):
 			if result_dict[name].price < price:
-			    self.assertTrue(result_dict[name].price < price) 
+			    self.assertTrue(result_dict[name].price < price)
 					
 if __name__ == '__main__':
     unittest.main()
